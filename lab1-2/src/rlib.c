@@ -691,6 +691,7 @@ int
 get_address (struct sockaddr_storage *ss, int local,
 	     int dgram, int family, char *name)
 {
+  fprintf (stderr, "get_address()\n");
   struct addrinfo hints;
   struct addrinfo *ai;
   int err;
@@ -1007,10 +1008,16 @@ main (int argc, char **argv)
     c.single_connection = 1;
     cn->rfd = 0;
     cn->wfd = 1;
-    if (get_address (&sr, 0, 1, AF_INET, remote) < 0
-	|| get_address (&sl, 1, 1, sr.ss_family, local) < 0
-	|| (cn->nfd = listen_on (1, &sl)) < 0)
-      exit (1);
+    // fprintf (stderr, "exit\n");
+    if (get_address (&sr, 0, 1, AF_INET, remote) < 0) {
+      exit(1);
+    }
+	  if (get_address (&sl, 1, 1, sr.ss_family, local) < 0) {
+      exit(1);
+    }
+	  if ((cn->nfd = listen_on (1, &sl)) < 0) {
+      exit(1);
+    }
     if (connect (cn->nfd, (struct sockaddr *) &sr, addrsize (&sr)) < 0) {
       perror ("connect");
       exit (1);
